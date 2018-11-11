@@ -11,7 +11,8 @@ def readme():
 setup(
     name='funkybob',
     packages=['funkybob'],
-    version='2018.05.1',
+    version='2018.11.11',
+    python_requires='>=2.7.12',
     long_description=readme(),
     long_description_content_type='text/markdown',
     license='MIT License',
