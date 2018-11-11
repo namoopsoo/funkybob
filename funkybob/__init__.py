@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-@functools.lru_cache(maxsize=None)
+#@functools.lru_cache(maxsize=None)
 def _binom(n, k):
     if n < k:
         return 0
@@ -47,8 +47,8 @@ class Combinations(collections.Sequence):
         if index < 0 or index >= len(self):
             raise IndexError('index out of range')
 
-        def find_seq_offset(n, k):
-            nonlocal index
+        def find_seq_offset(n, k, index):
+            # nonlocal index
 
             total = binom(n, k)
 
@@ -58,7 +58,7 @@ class Combinations(collections.Sequence):
                     break
 
             index -= diff
-            return n - m + 1
+            return n - m + 1, index
 
         seq = self.seq
         r = self.r
@@ -68,7 +68,8 @@ class Combinations(collections.Sequence):
         result = [None] * r
 
         for j in range(r):
-            i += find_seq_offset(s - i - 1, r - j)
+            ii, index = find_seq_offset(s - i - 1, r - j)
+            i += ii
             result[j] = seq[i]
 
         return tuple(result)
@@ -223,7 +224,7 @@ class NameGenerator(collections.Iterable):
 
     def _name_multi(self, index):
         adjs, name = self._sequence[index]
-        return self.separator.join((*adjs, name))
+        return self.separator.join(adjs + [name])
 
     @property
     def unique_count(self):
@@ -258,7 +259,7 @@ class UniqueRandomNameGenerator(RandomNameGenerator, collections.Sequence):
     def __init__(
             self, members=2, separator='_', seed=None,
             names=None, adjectives=None):
-        super().__init__(members, separator, names, adjectives)
+        super(UniqueRandomNameGenerator, self).__init__(members, separator, names, adjectives)
         self._rnd_indices = RandomPermutation(len(self._sequence), seed)
 
     def __iter__(self):
